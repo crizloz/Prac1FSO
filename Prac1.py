@@ -10,7 +10,8 @@ Cristina Izquierdo Lozano
 '''
 
 from Tkinter import * #Llibreria Tkinter
-import tkFileDialog, Tkinter, tkFileDialog, tkMessageBox, ScrolledText, os, os.path #importar mòduls extra
+import tkFileDialog, Tkinter, tkFileDialog, tkMessageBox, ScrolledText, os, os.path, glob #importar mòduls extra
+from vdiff import * #Llibreria Vdiff
 
 
 #----------------------------------------------FUNCIONS-----------------------------------------------
@@ -18,27 +19,36 @@ import tkFileDialog, Tkinter, tkFileDialog, tkMessageBox, ScrolledText, os, os.p
 def escull_dir():
 	global dirFont, dirDesti #directoris com a variables globals
 	#diàlegs per a escollir els directoris font i destí:
-	dirFont = tkFileDialog.askdirectory(title='Escull directori font') 
-	dirDesti = tkFileDialog.askdirectory(title='Escull directori destí')
+	dirFont = tkFileDialog.askdirectory(title = 'Escull directori font')
+	dirFont = " "
+	lFont = Label(finestra,text=dirFont)
+	lFont.pack(anchor=W, side=LEFT)
+	dirDesti = tkFileDialog.askdirectory(title = 'Escull directori destí')
+	dirDesti = " "
 
 def llistaOriginals(): #llista amb els fitxers originals
 	global dirFont
-	for (dirpath, dirnames, filenames) in os.walk(dirFont):
+	for filenames in glob.glob(dirFont+'/*'): #tots els fitxers del dirFont
 		for element in filenames:
-			lori.insert(END, element) #afegim tots els fitxers que es trobin a la llista del fitxer original, al final (END)
+			lori.append(element) #afegim tots els fitxers que es trobin a la llista del fitxer original
 
 def llistaIguals(): #llista amb els fitxers iguals (nom i contingut)
 	global dirDesti
-	for (dirpath, dirnames, filenames) in os.walk(dirDesti):
-		i = 0 #comptador
-		#for element in filenames: #hauriem de recorrer tota la llista lori per a cada element en el fitxer de desti??????????? --> poc optim, pensar una altra solucio
+	for (dirpath, dirnames, filenames) in os.walk(dirDesti): #os.walk mira tots els fitxers de tots els directoris recursivament
+		for element in filenames: #recorrem els elements que ens torna el os.walk
+#--------------------->falta revisar el contingut "command getoutput"
+			if element in lori: #si l'element es troba en la llista original (del directori font)
+				ligu.append(element) #afegim el fitxer al final de la llista
 			
 def llistaSemblants(): #llista amb els fitxers semblants (nom)
-	global dirFont, dirDesti
-		#lsem = ""
+	global dirDesti
+	for (dirpath, dirnames, filenames) in os.walk(dirDesti): #os.walk mira tots els fitxers de tots els directoris recursivament
+		for element in filenames: #recorrem els elements que ens torna el os.walk
+			if element in lori: #si l'element es troba en la llista original (del directori font)
+				lsem.append(element) #afegim el fitxer al final de la llista
 
 def cerca():
-	print "executa script per a fer les cerques"
+	print "executa funcions llistaX per a fer les cerques"
 
 #en les següents funcions passem per paràmetre la llista pertinent --> estalviar codi
 def borra_seleccio(list): #esborrar els elements seleccionats en la llista pertinent
